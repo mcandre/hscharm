@@ -1,13 +1,10 @@
 #!/usr/bin/env runhaskell
 
-module HelloCharm where
+module Main where
 
-import Charm
+import HsCharm
 
 main :: IO ()
 main = do
-	putStrLn $ "Accessing width..."
-
 	w <- getWidth
-
 	putStrLn $ "Width: " ++ show w

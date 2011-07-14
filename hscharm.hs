@@ -1,18 +1,9 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 
-module Main (
-	getWidth,
-	main
+module HsCharm (
+	getWidth
 ) where
 
 import Foreign
 
 foreign import ccall "charm.h get_width" getWidth :: IO Int
-
-main :: IO ()
-main = do
-	putStrLn $ "Accessing width..."
-
-	w <- getWidth
-
-	putStrLn $ "Width: " ++ show w
