@@ -1,5 +1,3 @@
-#!/usr/bin/env runhaskell
-
 import HsCharm
 import Control.Monad (forever, when)
 
