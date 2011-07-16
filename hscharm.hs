@@ -1,6 +1,8 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 
 module HsCharm (
+	charmVersion,
+
 	getWidth,
 	getHeight,
 
@@ -13,6 +15,7 @@ module HsCharm (
 	rawOn,
 	rawOff,
 
+	getCursor,
 	moveCursor,
 	blotChar,
 	blotString,
@@ -146,6 +149,9 @@ module HsCharm (
 import Foreign
 import Foreign.C
 
+charmVersion :: String
+charmVersion = "0.0.1"
+
 foreign import ccall "charm.h get_width" getWidth :: IO Int
 foreign import ccall "charm.h get_height" getHeight :: IO Int
 
@@ -157,6 +163,16 @@ foreign import ccall "charm.h echo_on" echoOn :: IO ()
 
 foreign import ccall "charm.h raw_on" rawOn :: IO ()
 foreign import ccall "charm.h raw_off" rawOff :: IO ()
+
+foreign import ccall "charm.h get_x" getX :: IO Int
+foreign import ccall "charm.h get_y" getY :: IO Int
+
+getCursor :: IO (Int, Int)
+getCursor = do
+	x <- getX
+	y <- getY
+
+	return (x, y)
 
 foreign import ccall "charm.h move_cursor" moveCursor :: Int -> Int -> IO ()
 foreign import ccall "charm.h blot_char" blotChar :: Char -> IO ()

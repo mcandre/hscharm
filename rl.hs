@@ -15,11 +15,21 @@ defaultGame = Game {
 		width = 80,
 		height = 24 - messageSpace,
 		loc = (1, 1),
-		messages = ["", "", ""]
+		messages = []-- ,
+		-- level = [[Cell]]
 	}
 
 voicemail :: Game -> [String]
 voicemail = take 2 . messages
+
+-- data Cell
+-- 	= Empty
+-- 	| Wall
+-- 	deriving (Eq)
+-- 
+-- instance Show Cell where
+-- 	show Empty = ' '
+-- 	show Wall = '#'
 
 move :: Game -> Key -> Game
 move g KeyUp = g {
@@ -68,9 +78,14 @@ loop g = do
 
 	moveCursor x y
 
+	c <- getCursor
+	let m = "Cursor: (" ++ show (fst c) ++ ", " ++ show (snd c) ++ ")"
+
 	blotChar '@'
 
-	blotMessages (messages g) (height g + messageSpace)
+	blotMessages ([m]) (height g + messageSpace)
+
+	-- blotMessages (messages g) (height g + messageSpace)
 
 	k <- getKey
 
