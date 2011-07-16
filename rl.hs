@@ -2,12 +2,14 @@
 
 import HsCharm
 import Control.Monad (when)
+import Maybe (fromJust)
 
 data Game = Game {
 		width :: Int,
 		height :: Int,
 		loc :: (Int, Int),
-		messages :: [String]
+		messages :: [String],
+		level :: [[Cell]]
 	}
 
 defaultGame :: Game
@@ -15,46 +17,67 @@ defaultGame = Game {
 		width = 80,
 		height = 24 - messageSpace,
 		loc = (1, 1),
-		messages = []-- ,
-		-- level = [[Cell]]
+		messages = [],
+		level = replicate (24 - messageSpace) (replicate 80 Empty)
 	}
 
 voicemail :: Game -> [String]
 voicemail = take 2 . messages
 
--- data Cell
--- 	= Empty
--- 	| Wall
--- 	deriving (Eq)
--- 
--- instance Show Cell where
--- 	show Empty = ' '
--- 	show Wall = '#'
+data Cell
+	= Empty
+	| Wall
+	deriving (Eq)
+
+impassible :: Cell -> Bool
+impassible Empty = False
+impassible Wall = True
+
+instance Show Cell where
+	show Empty = " "
+	show Wall = "#"
+
+cellAt :: Game -> (Int, Int) -> Maybe Cell
+cellAt g (x, y)
+	| (x < 1) || (y < 1) || (x > width g) || (y > height g) = Nothing
+	| otherwise = Just $ ((level g) !! x) !! y
 
 move :: Game -> Key -> Game
-move g KeyUp = g {
-			loc = (x, if y == 1 then y else (y - 1)),
+move g KeyUp
+	| y == 1 = g
+	| impassible $ fromJust $ cellAt g (x, y - 1) = g
+	| otherwise = g {
+			loc = (x, y - 1),
 			messages = "You moved up!":(voicemail g)
 		}
 	where
 		(x, y) = loc g
 
-move g KeyDown = g {
-			loc = (x, if y == height g then y else (y + 1)),
+move g KeyDown
+	| y == height g = g
+	| impassible $ fromJust $ cellAt g (x, y + 1) = g
+	| otherwise = g {
+			loc = (x, y + 1),
 			messages = "You moved down!":(voicemail g)
 		}
 	where
 		(x, y) = loc g
 
-move g KeyRight = g {
-			loc = (if x == width g then x else (x + 1), y),
+move g KeyRight
+	| x == width g = g
+	| impassible $ fromJust $ cellAt g (x + 1, y) = g
+	| otherwise = g {
+			loc = (x + 1, y),
 			messages = "You moved right!":(voicemail g)
 		}
 	where
 		(x, y) = loc g
 
-move g KeyLeft = g {
-			loc = (if x == 1 then x else (x - 1), y),
+move g KeyLeft
+	| x == 1 = g
+	| impassible $ fromJust $ cellAt g (x - 1, y) = g
+	| otherwise = g {
+			loc = (x - 1, y),
 			messages = "You moved left!":(voicemail g)
 		}
 	where
@@ -70,6 +93,10 @@ blotMessages (m:ms) row = do
 	hCenterString m
 	blotMessages ms (row - 1)
 
+blotLevel :: Game -> IO ()
+blotLevel g = do
+	-- ...
+
 loop :: Game -> IO ()
 loop g = do
 	clearScreen
@@ -77,15 +104,9 @@ loop g = do
 	let (x, y) = loc g
 
 	moveCursor x y
-
-	c <- getCursor
-	let m = "Cursor: (" ++ show (fst c) ++ ", " ++ show (snd c) ++ ")"
-
 	blotChar '@'
 
-	blotMessages ([m]) (height g + messageSpace)
-
-	-- blotMessages (messages g) (height g + messageSpace)
+	blotMessages (messages g) (height g + messageSpace)
 
 	k <- getKey
 
