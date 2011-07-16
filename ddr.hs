@@ -13,12 +13,12 @@ data Game = Game {
 
 drawScore :: Int -> IO ()
 drawScore s = do
-	moveCursor 1 3
+	moveCursor 0 2
 	hCenterString $ printf "SCORE %04d" s
 
 drawArrow :: Key -> IO ()
 drawArrow a = do
-	moveCursor 1 5
+	moveCursor 0 4
 
 	hCenterString $ case a of
 		KeyUp -> "^"
@@ -28,7 +28,7 @@ drawArrow a = do
 
 drawHoot :: Bool -> IO ()
 drawHoot b = do
-	moveCursor 1 7
+	moveCursor 0 6
 
 	hCenterString $ case b of
 		True -> "GOOD!"
