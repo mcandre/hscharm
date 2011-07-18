@@ -13,8 +13,9 @@ data Game = Game {
 		width :: Int,
 		height :: Int,
 		messages :: [String],
-		level :: [[Cell]],
-		rogue :: Monster
+		level :: [[Monster]],
+		rogue :: Monster,
+		monsters :: [Monster]
 	}
 
 defaultGame :: Game
@@ -22,43 +23,57 @@ defaultGame = Game {
 		width = 80,
 		height = 24 - messageSpace,
 		messages = [],
-		level = replicate (24 - messageSpace) (replicate 80 Empty),
-		rogue = defaultRogue
+		level = replicate (24 - messageSpace) (replicate 80 defaultFloor),
+		rogue = defaultRogue,
+		monsters = []
 	}
 
 voicemail :: Game -> [String]
 voicemail = take 2 . messages
 
-data Cell
-	= Empty
-	| Wall
-	deriving (Eq)
-
-impassible :: Cell -> Bool
-impassible Empty = False
-impassible Wall = True
-
-instance Show Cell where
-	show Empty = " "
-	show Wall = "#"
-
 data Monster = Monster {
 		symbol :: String,
 		loc :: (Int, Int),
+		impassible :: Bool,
 		hp :: Int
 	}
 
 instance Show Monster where
 	show = symbol
 
+defaultFloor :: Monster
+defaultFloor = Monster {
+		symbol = " ",
+		loc = (0, 0),
+		impassible = False,
+		hp = 0
+	}
+
+defaultWall :: Monster
+defaultWall = Monster {
+		symbol = "#",
+		loc = (0, 0),
+		impassible = True,
+		hp = 0
+	}
+
 defaultRogue :: Monster
 defaultRogue = Monster {
 		symbol = "@",
 		loc = (0, 0),
+		impassible = True,
 		hp = 10
 	}
 
-cellAt :: Game -> (Int, Int) -> Maybe Cell
+defaultZombie :: Monster
+defaultZombie = Monster {
+		symbol = "z",
+		loc = (0, 0),
+		impassible = True,
+		hp = 1
+	}
+
+cellAt :: Game -> (Int, Int) -> Maybe Monster
 cellAt g (x, y)
 	| (x < 0) || (y < 0) || (x > (width g) - 1) || (y > (height g) - 1) = Nothing
 	| otherwise = Just $ ((level g) !! y) !! x
@@ -118,18 +133,24 @@ blotMessages (m:ms) row = do
 	hCenterString m
 	blotMessages ms (row - 1)
 
-blotLevel :: [[Cell]] -> IO ()
+blotLevel :: [[Monster]] -> IO ()
 blotLevel lev = do
 	moveCursor 0 0
 	(blotString . join "\n" . (map (join "" . (map show)))) lev
+
+blotMonster :: Monster -> IO ()
+blotMonster m = do
+	let (x, y) = loc m
+	moveCursor x y
+	blotString $ show m
 
 loop :: Game -> IO ()
 loop g = do
 	blotLevel $ level g
 
-	let (x, y) = (loc . rogue) g
-	moveCursor x y
-	blotChar '@'
+	mapM blotMonster (monsters g)
+
+	blotMonster $ rogue g
 
 	-- Clear messages
 	blotMessages (replicate 3 $ join "" $ replicate (width g) " ") (height g + messageSpace - 1)
@@ -147,11 +168,17 @@ loop g = do
 
 			loop g')
 
-generateRow :: Int -> IO [Cell]
-generateRow w = replicateM w (pick [Empty, Empty, Wall])
+generateRow :: Int -> IO [Monster]
+generateRow w = replicateM w (pick [defaultFloor, defaultFloor, defaultWall])
 
-generateLevel :: Int -> Int -> IO [[Cell]]
+generateLevel :: Int -> Int -> IO [[Monster]]
 generateLevel w h = replicateM h (generateRow w)
+
+generateMonsters :: [[Monster]] -> IO [Monster]
+generateMonsters lev = do
+	-- ...
+
+	return []
 
 main :: IO ()
 main = do
@@ -167,6 +194,7 @@ main = do
 	locY <- pick [0 .. (h' - 1)]
 
 	lev <- generateLevel w h'
+	monsters <- generateMonsters lev
 
 	let g = defaultGame {
 			width = w,
@@ -174,7 +202,8 @@ main = do
 			level = lev,
 			rogue = defaultRogue {
 					loc = (locX, locY)
-				}
+				},
+			monsters = monsters
 		}
 
 	loop g
