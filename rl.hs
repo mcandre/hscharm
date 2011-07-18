@@ -105,8 +105,6 @@ blotLevel lev = do
 
 loop :: Game -> IO ()
 loop g = do
-	clearScreen
-
 	blotLevel $ level g
 
 	let (x, y) = loc g
