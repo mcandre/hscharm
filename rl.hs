@@ -12,18 +12,18 @@ pick xs = (randomRIO (0, length xs - 1)) >>= (return . (xs !!))
 data Game = Game {
 		width :: Int,
 		height :: Int,
-		loc :: (Int, Int),
 		messages :: [String],
-		level :: [[Cell]]
+		level :: [[Cell]],
+		rogue :: Monster
 	}
 
 defaultGame :: Game
 defaultGame = Game {
 		width = 80,
 		height = 24 - messageSpace,
-		loc = (0, 0),
 		messages = [],
-		level = replicate (24 - messageSpace) (replicate 80 Empty)
+		level = replicate (24 - messageSpace) (replicate 80 Empty),
+		rogue = defaultRogue
 	}
 
 voicemail :: Game -> [String]
@@ -42,6 +42,22 @@ instance Show Cell where
 	show Empty = " "
 	show Wall = "#"
 
+data Monster = Monster {
+		symbol :: String,
+		loc :: (Int, Int),
+		hp :: Int
+	}
+
+instance Show Monster where
+	show = symbol
+
+defaultRogue :: Monster
+defaultRogue = Monster {
+		symbol = "@",
+		loc = (0, 0),
+		hp = 10
+	}
+
 cellAt :: Game -> (Int, Int) -> Maybe Cell
 cellAt g (x, y)
 	| (x < 0) || (y < 0) || (x > (width g) - 1) || (y > (height g) - 1) = Nothing
@@ -52,41 +68,45 @@ move g KeyUp
 	| y == 0 = g
 	| impassible $ fromJust $ cellAt g (x, y - 1) = g
 	| otherwise = g {
-			loc = (x, y - 1),
+			rogue = r { loc = (x, y - 1) },
 			messages = "You moved up!":(voicemail g)
 		}
 	where
-		(x, y) = loc g
+		r = rogue g
+		(x, y) = loc r
 
 move g KeyDown
 	| y == (height g) - 1 = g
 	| impassible $ fromJust $ cellAt g (x, y + 1) = g
 	| otherwise = g {
-			loc = (x, y + 1),
+			rogue = r { loc = (x, y + 1) },
 			messages = "You moved down!":(voicemail g)
 		}
 	where
-		(x, y) = loc g
+		r = rogue g
+		(x, y) = loc r
 
 move g KeyRight
 	| x == (width g) - 1 = g
 	| impassible $ fromJust $ cellAt g (x + 1, y) = g
 	| otherwise = g {
-			loc = (x + 1, y),
+			rogue = r { loc = (x + 1, y) },
 			messages = "You moved right!":(voicemail g)
 		}
 	where
-		(x, y) = loc g
+		r = rogue g
+		(x, y) = loc r
 
 move g KeyLeft
 	| x == 0 = g
 	| impassible $ fromJust $ cellAt g (x - 1, y) = g
 	| otherwise = g {
-			loc = (x - 1, y),
+			rogue = r { loc = (x - 1, y) },
 			messages = "You moved left!":(voicemail g)
 		}
 	where
-		(x, y) = loc g
+		r = rogue g
+		(x, y) = loc r
 
 messageSpace :: Int
 messageSpace = 3
@@ -107,9 +127,12 @@ loop :: Game -> IO ()
 loop g = do
 	blotLevel $ level g
 
-	let (x, y) = loc g
+	let (x, y) = (loc . rogue) g
 	moveCursor x y
 	blotChar '@'
+
+	-- Clear messages
+	blotMessages (replicate 3 $ join "" $ replicate (width g) " ") (height g + messageSpace - 1)
 
 	blotMessages (messages g) (height g + messageSpace - 1)
 
@@ -148,8 +171,10 @@ main = do
 	let g = defaultGame {
 			width = w,
 			height = h',
-			loc = (locX, locY),
-			level = lev
+			level = lev,
+			rogue = defaultRogue {
+					loc = (locX, locY)
+				}
 		}
 
 	loop g
