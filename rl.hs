@@ -134,7 +134,7 @@ loop g = do
 	-- Clear messages
 	blotMessages (replicate 3 $ join "" $ replicate (width g) " ") (height g + messageSpace - 1)
 
-	blotMessages (messages g) (height g + messageSpace - 1)
+	blotMessages (reverse $ messages g) (height g + messageSpace - 1)
 
 	k <- getKey
 
