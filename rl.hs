@@ -2,7 +2,7 @@
 
 import HsCharm
 import Control.Monad (when, replicateM)
-import Maybe (fromJust)
+import Data.List (find, delete)
 import Data.List.Utils (join)
 import Random (randomRIO)
 
@@ -36,7 +36,7 @@ data Monster = Monster {
 		loc :: (Int, Int),
 		impassible :: Bool,
 		hp :: Int
-	}
+	} deriving (Eq)
 
 instance Show Monster where
 	show = symbol
@@ -73,55 +73,74 @@ defaultZombie = Monster {
 		hp = 1
 	}
 
-cellAt :: Game -> (Int, Int) -> Maybe Monster
-cellAt g (x, y)
-	| (x < 0) || (y < 0) || (x > (width g) - 1) || (y > (height g) - 1) = Nothing
-	| otherwise = Just $ ((level g) !! y) !! x
+cellAt :: Game -> (Int, Int) -> Monster
+cellAt g (x, y) = ((level g) !! y) !! x
 
-move :: Game -> Key -> Game
+thingAt :: Game -> (Int, Int) -> Monster
+thingAt g (x, y) = case find (\e -> (((x, y) ==) . loc) e) (monsters g) of
+	Just m -> m
+	_ -> cellAt g (x, y)
+
+attack :: Game -> Monster -> IO Game
+attack g m = case (symbol m) of
+	"#" -> return g { messages = "Immobile wall.":(voicemail g) }
+	"z" -> do
+		let m' = m { hp = hp m - 1 }
+		let ms = delete m (monsters g)
+		return g {
+				monsters = if hp m' == 0 then ms else m':ms,
+				messages = "You hit a zombie.":(voicemail g)
+			}
+	_ -> return g
+
+move :: Game -> Key -> IO Game
 move g KeyUp
-	| y == 0 = g
-	| impassible $ fromJust $ cellAt g (x, y - 1) = g
-	| otherwise = g {
+	| y == 0 = return $ g { messages = "Edge of the world.":(voicemail g) }
+	| impassible c = attack g c
+	| otherwise = return $ g {
 			rogue = r { loc = (x, y - 1) },
 			messages = "You moved up!":(voicemail g)
 		}
 	where
 		r = rogue g
 		(x, y) = loc r
+		c = thingAt g (x, y - 1)
 
 move g KeyDown
-	| y == (height g) - 1 = g
-	| impassible $ fromJust $ cellAt g (x, y + 1) = g
-	| otherwise = g {
+	| y == (height g) - 1 = return $ g { messages = "Edge of the world.":(voicemail g) }
+	| impassible c = attack g c
+	| otherwise = return $ g {
 			rogue = r { loc = (x, y + 1) },
 			messages = "You moved down!":(voicemail g)
 		}
 	where
 		r = rogue g
 		(x, y) = loc r
+		c = thingAt g (x, y + 1)
 
 move g KeyRight
-	| x == (width g) - 1 = g
-	| impassible $ fromJust $ cellAt g (x + 1, y) = g
-	| otherwise = g {
+	| x == (width g) - 1 = return $ g { messages = "Edge of the world.":(voicemail g) }
+	| impassible c = attack g c
+	| otherwise = return $ g {
 			rogue = r { loc = (x + 1, y) },
 			messages = "You moved right!":(voicemail g)
 		}
 	where
 		r = rogue g
 		(x, y) = loc r
+		c = thingAt g (x + 1, y)
 
 move g KeyLeft
-	| x == 0 = g
-	| impassible $ fromJust $ cellAt g (x - 1, y) = g
-	| otherwise = g {
+	| x == 0 = return $ g { messages = "Edge of the world.":(voicemail g) }
+	| impassible c = attack g c
+	| otherwise = return $ g {
 			rogue = r { loc = (x - 1, y) },
 			messages = "You moved left!":(voicemail g)
 		}
 	where
 		r = rogue g
 		(x, y) = loc r
+		c = thingAt g (x - 1, y)
 
 messageSpace :: Int
 messageSpace = 3
@@ -161,10 +180,10 @@ loop g = do
 
 	when (k `notElem` [KeyEscape, KeyQ])
 		(do
-			let g' = if k `elem` [KeyUp, KeyDown, KeyRight, KeyLeft] then
+			g' <- if k `elem` [KeyUp, KeyDown, KeyRight, KeyLeft] then
 					move g k
 				else
-					g
+					return g
 
 			loop g')
 
@@ -174,11 +193,34 @@ generateRow w = replicateM w (pick [defaultFloor, defaultFloor, defaultWall])
 generateLevel :: Int -> Int -> IO [[Monster]]
 generateLevel w h = replicateM h (generateRow w)
 
-generateMonsters :: [[Monster]] -> IO [Monster]
-generateMonsters lev = do
-	-- ...
+zombies :: Game -> Int
+zombies g = width g `div` 10
 
-	return []
+generateMonsters :: Game -> [Monster] -> IO Game
+generateMonsters g [] = return g
+generateMonsters g (m:ms) = do
+	let r = (loc . rogue) g
+
+	x <- pick [0 .. (width g - 1)]
+	y <- pick [0 .. (height g - 1)]
+
+	if r == (x, y) then do
+		generateMonsters g (m:ms)
+	else do
+		let c = cellAt g (x, y)
+
+		case symbol c of
+			" " -> do
+				let placedMonsters = monsters g
+				let locs = map loc placedMonsters
+
+				if (x, y) `elem` locs then do
+					generateMonsters g (m:ms)
+				else do
+					let m' = m { loc = (x, y) }
+					let g' = g { monsters = m':placedMonsters }
+					generateMonsters g' ms
+			_ -> generateMonsters g (m:ms)
 
 main :: IO ()
 main = do
@@ -194,18 +236,17 @@ main = do
 	locY <- pick [0 .. (h' - 1)]
 
 	lev <- generateLevel w h'
-	monsters <- generateMonsters lev
-
 	let g = defaultGame {
 			width = w,
 			height = h',
 			level = lev,
 			rogue = defaultRogue {
 					loc = (locX, locY)
-				},
-			monsters = monsters
+				}
 		}
 
-	loop g
+	g' <- generateMonsters g (replicate (zombies g) defaultZombie)
+
+	loop g'
 
 	endCharm
