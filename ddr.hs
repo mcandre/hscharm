@@ -2,7 +2,7 @@ import HsCharm
 import Data.Random
 import Data.Random.Source.DevRandom
 import Data.Random.Extras
-import Control.Monad (forever, when)
+import Control.Monad (when)
 import Text.Printf (printf)
 
 data Game = Game {

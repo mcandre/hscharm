@@ -6,6 +6,5 @@ REQUIREMENTS
 
 EXAMPLE
 
-	$ cabal install random-extras
 	$ make
 	$ ./hellocharm

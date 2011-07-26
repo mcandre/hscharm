@@ -1,5 +1,4 @@
 import HsCharm
-import Control.Monad (forever, when)
 
 react :: Key -> IO ()
 react KeyEscape = return ()
