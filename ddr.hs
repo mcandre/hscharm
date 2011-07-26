@@ -1,10 +1,9 @@
 import HsCharm
+import Data.Random
+import Data.Random.Source.DevRandom
+import Data.Random.Extras
 import Control.Monad (forever, when)
 import Text.Printf (printf)
-import Random (randomRIO)
-
-pick :: [a] -> IO a
-pick xs = (randomRIO (0, length xs - 1)) >>= (return . (xs !!))
 
 data Game = Game {
 		score :: Int,
@@ -38,7 +37,7 @@ loop :: Game -> IO ()
 loop g = do
 	drawScore $ score g
 
-	arrow <- pick [KeyUp, KeyDown, KeyRight, KeyLeft]
+	arrow <- runRVar (choice [KeyUp, KeyDown, KeyRight, KeyLeft]) DevRandom
 
 	drawArrow arrow
 

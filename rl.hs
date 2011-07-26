@@ -1,13 +1,12 @@
 -- Roguelike
 
 import HsCharm
+import Data.Random
+import Data.Random.Source.DevRandom
+import Data.Random.Extras
 import Control.Monad (when, replicateM)
 import Data.List (find, delete)
 import Data.List.Utils (join)
-import Random (randomRIO)
-
-pick :: [a] -> IO a
-pick xs = (randomRIO (0, length xs - 1)) >>= (return . (xs !!))
 
 data Game = Game {
 		width :: Int,
@@ -188,7 +187,7 @@ loop g = do
 			loop g')
 
 generateRow :: Int -> IO [Monster]
-generateRow w = replicateM w (pick [defaultFloor, defaultFloor, defaultWall])
+generateRow w = (replicateM w . flip runRVar DevRandom . choice) [defaultFloor, defaultFloor, defaultWall]
 
 generateLevel :: Int -> Int -> IO [[Monster]]
 generateLevel w h = replicateM h (generateRow w)
@@ -201,8 +200,8 @@ generateMonsters g [] = return g
 generateMonsters g (m:ms) = do
 	let r = (loc . rogue) g
 
-	x <- pick [0 .. (width g - 1)]
-	y <- pick [0 .. (height g - 1)]
+	x <- runRVar (choice [0 .. width g - 1]) DevRandom
+	y <- runRVar (choice [0 .. height g - 1]) DevRandom
 
 	if r == (x, y) then do
 		generateMonsters g (m:ms)
@@ -232,8 +231,8 @@ main = do
 	-- Reserve space for messages
 	let h' = h - messageSpace
 
-	locX <- pick [0 .. (w - 1)]
-	locY <- pick [0 .. (h' - 1)]
+	locX <- runRVar (choice [0 .. w - 1]) DevRandom
+	locY <- runRVar (choice [0 .. h' - 1]) DevRandom
 
 	lev <- generateLevel w h'
 	let g = defaultGame {
