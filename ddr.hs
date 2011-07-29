@@ -29,9 +29,9 @@ drawHoot :: Bool -> IO ()
 drawHoot b = do
 	moveCursor 0 6
 
-	hCenterString $ case b of
-		True -> "GOOD!"
-		False -> "BAD! "
+	hCenterString $ if b
+		then "GOOD!"
+		else "BAD! "
 
 loop :: Game -> IO ()
 loop g = do
@@ -49,10 +49,7 @@ loop g = do
 
 			drawHoot match
 
-			let g' = g { score = score g + case match of
-					True -> 1
-					False -> -1
-				}
+			let g' = g { score = score g + (if match then 1 else -1) }
 
 			loop g')
 

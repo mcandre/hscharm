@@ -73,32 +73,32 @@ defaultZombie = Monster {
 	}
 
 cellAt :: Game -> (Int, Int) -> Monster
-cellAt g (x, y) = ((level g) !! y) !! x
+cellAt g (x, y) = (level g !! y) !! x
 
 thingAt :: Game -> (Int, Int) -> Monster
-thingAt g (x, y) = case find (\e -> (((x, y) ==) . loc) e) (monsters g) of
+thingAt g p = case find ((p ==) . loc) (monsters g) of
 	Just m -> m
-	_ -> cellAt g (x, y)
+	_ -> cellAt g p
 
 attack :: Game -> Monster -> IO Game
-attack g m = case (symbol m) of
-	"#" -> return g { messages = "Immobile wall.":(voicemail g) }
+attack g m = case symbol m of
+	"#" -> return g { messages = "Immobile wall.":voicemail g }
 	"z" -> do
 		let m' = m { hp = hp m - 1 }
 		let ms = delete m (monsters g)
 		return g {
 				monsters = if hp m' == 0 then ms else m':ms,
-				messages = "You hit a zombie.":(voicemail g)
+				messages = "You hit a zombie.":voicemail g
 			}
 	_ -> return g
 
 move :: Game -> Key -> IO Game
 move g KeyUp
-	| y == 0 = return $ g { messages = "Edge of the world.":(voicemail g) }
+	| y == 0 = return $ g { messages = "Edge of the world.":voicemail g }
 	| impassible c = attack g c
 	| otherwise = return $ g {
 			rogue = r { loc = (x, y - 1) },
-			messages = "You moved up!":(voicemail g)
+			messages = "You moved up!":voicemail g
 		}
 	where
 		r = rogue g
@@ -106,11 +106,11 @@ move g KeyUp
 		c = thingAt g (x, y - 1)
 
 move g KeyDown
-	| y == (height g) - 1 = return $ g { messages = "Edge of the world.":(voicemail g) }
+	| y == height g - 1 = return $ g { messages = "Edge of the world.":voicemail g }
 	| impassible c = attack g c
 	| otherwise = return $ g {
 			rogue = r { loc = (x, y + 1) },
-			messages = "You moved down!":(voicemail g)
+			messages = "You moved down!":voicemail g
 		}
 	where
 		r = rogue g
@@ -118,11 +118,11 @@ move g KeyDown
 		c = thingAt g (x, y + 1)
 
 move g KeyRight
-	| x == (width g) - 1 = return $ g { messages = "Edge of the world.":(voicemail g) }
+	| x == width g - 1 = return $ g { messages = "Edge of the world.":voicemail g }
 	| impassible c = attack g c
 	| otherwise = return $ g {
 			rogue = r { loc = (x + 1, y) },
-			messages = "You moved right!":(voicemail g)
+			messages = "You moved right!":voicemail g
 		}
 	where
 		r = rogue g
@@ -130,11 +130,11 @@ move g KeyRight
 		c = thingAt g (x + 1, y)
 
 move g KeyLeft
-	| x == 0 = return $ g { messages = "Edge of the world.":(voicemail g) }
+	| x == 0 = return $ g { messages = "Edge of the world.":voicemail g }
 	| impassible c = attack g c
 	| otherwise = return $ g {
 			rogue = r { loc = (x - 1, y) },
-			messages = "You moved left!":(voicemail g)
+			messages = "You moved left!":voicemail g
 		}
 	where
 		r = rogue g
@@ -154,7 +154,7 @@ blotMessages (m:ms) row = do
 blotLevel :: [[Monster]] -> IO ()
 blotLevel lev = do
 	moveCursor 0 0
-	(blotString . join "\n" . (map (join "" . (map show)))) lev
+	(blotString . join "\n" . map (join "" . map show)) lev
 
 blotMonster :: Monster -> IO ()
 blotMonster m = do
@@ -166,7 +166,7 @@ loop :: Game -> IO ()
 loop g = do
 	blotLevel $ level g
 
-	mapM blotMonster (monsters g)
+	mapM_ blotMonster (monsters g)
 
 	blotMonster $ rogue g
 
@@ -203,23 +203,23 @@ generateMonsters g (m:ms) = do
 	x <- runRVar (choice [0 .. width g - 1]) DevRandom
 	y <- runRVar (choice [0 .. height g - 1]) DevRandom
 
-	if r == (x, y) then do
-		generateMonsters g (m:ms)
-	else do
-		let c = cellAt g (x, y)
+	if r == (x, y)
+		then generateMonsters g (m:ms)
+		else do
+			let c = cellAt g (x, y)
 
-		case symbol c of
-			" " -> do
-				let placedMonsters = monsters g
-				let locs = map loc placedMonsters
+			case symbol c of
+				" " -> do
+					let placedMonsters = monsters g
+					let locs = map loc placedMonsters
 
-				if (x, y) `elem` locs then do
-					generateMonsters g (m:ms)
-				else do
-					let m' = m { loc = (x, y) }
-					let g' = g { monsters = m':placedMonsters }
-					generateMonsters g' ms
-			_ -> generateMonsters g (m:ms)
+					if (x, y) `elem` locs
+						then generateMonsters g (m:ms)
+						else do
+							let m' = m { loc = (x, y) }
+							let g' = g { monsters = m':placedMonsters }
+							generateMonsters g' ms
+				_ -> generateMonsters g (m:ms)
 
 main :: IO ()
 main = do
