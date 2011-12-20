@@ -1,10 +1,10 @@
-hscharm - a Haskell charm wrapper
+# hscharm - a Haskell charm wrapper
 
-REQUIREMENTS
+## REQUIREMENTS
 
  - random-extras
 
-EXAMPLE
+## EXAMPLE
 
 	$ make
 	$ ./hellocharm
