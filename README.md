@@ -2,6 +2,7 @@
 
 ## REQUIREMENTS
 
+ - base
  - random-extras
 
 ## EXAMPLE
