@@ -9,6 +9,9 @@ ddr: ddr.hs hscharm.hs charm.c charm.h
 rl: rl.hs hscharm.hs charm.c charm.h
 	ghc --make -fforce-recomp -o rl rl.hs hscharm.hs charm.c charm.h -package random-extras -package base
 
+lint:
+	hlint .
+
 clean:
 	-rm rl
 	-rm ddr
