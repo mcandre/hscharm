@@ -7,10 +7,10 @@ react _ = getKey >>= react
 
 main :: IO ()
 main = do
-	startCharm
+  startCharm
 
-	vCenterString "Hello Charm! Press Escape, q, or Control-C to quit."
+  vCenterString "Hello Charm! Press Escape, q, or Control-C to quit."
 
-	getKey >>= react
+  getKey >>= react
 
-	endCharm
+  endCharm
