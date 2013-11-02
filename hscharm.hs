@@ -147,7 +147,6 @@ module HsCharm (
     )
   ) where
 
-import Foreign
 import Foreign.C
 
 charmVersion :: String

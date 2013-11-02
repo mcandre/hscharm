@@ -140,6 +140,8 @@ move g KeyLeft
     (x, y) = loc r
     c = thingAt g (x - 1, y)
 
+move g _ = return g
+
 messageSpace :: Int
 messageSpace = 3
 
