@@ -16,8 +16,10 @@ lint:
 	hlint .
 
 clean:
+	-rm *.exe
+	-rm *.o
+	-rm *.hi
 	-rm rl
 	-rm ddr
 	-rm hellocharm
-	-rm *.hi
-	-rm *.o
+
