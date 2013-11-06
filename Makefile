@@ -14,7 +14,7 @@ rl: rl.hs hscharm.hs charm.c charm.h
 
 lint:
 	hlint .
-	splint *.c *.h -preproc
+	splint *.c *.h
 
 clean:
 	-rm *.exe
