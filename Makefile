@@ -16,6 +16,9 @@ lint:
 	hlint .
 	splint *.c *.h
 
+churn:
+	bundle exec churn
+
 clean:
 	-rm *.exe
 	-rm *.o

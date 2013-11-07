@@ -1,6 +1,8 @@
 *.exe
 *.o
 *.hi
+Gemfile.lock
+tmp/
 rl
 ddr
 hellocharm
