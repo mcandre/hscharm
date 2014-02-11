@@ -1,0 +1,3 @@
+[submodule "charm"]
+	path = charm
+	url = git@github.com:mcandre/charm.git

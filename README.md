@@ -1,11 +1,12 @@
 # hscharm - a Haskell charm wrapper
 
-## REQUIREMENTS
+# REQUIREMENTS
 
- - base
- - random-extras
+* base
+* random-extras
 
-## EXAMPLE
+# EXAMPLE
 
+    $ git submodule init
+    $ git submodule update
 	$ make
-	$ ./hellocharm
