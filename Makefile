@@ -1,28 +1,31 @@
+FLAGS=-O2 -Wall -fwarn-tabs --make -fforce-recomp
+
 all: test
 
 test: hellocharm
 	./hellocharm
 
-hellocharm: hellocharm.hs hscharm.hs charm/charm.c charm/charm.h
-	ghc -O2 -Wall -fwarn-tabs --make -fforce-recomp -o hellocharm hellocharm.hs hscharm.hs charm/charm.c charm/charm.h
+hellocharm: HelloCharm.hs HsCharm.hs charm/charm.c charm/charm.h
+	ghc $(FLAGS) -o hellocharm HelloCharm.hs HsCharm.hs charm/charm.c charm/charm.h
 
-ddr: ddr.hs hscharm.hs charm/charm.c charm/charm.h
-	ghc -O2 -Wall -fwarn-tabs --make -fforce-recomp -o ddr ddr.hs hscharm.hs charm/charm.c charm/charm.h -package random-extras
+ddr: DDR.hs HsCharm.hs charm/charm.c charm/charm.h
+	ghc $(FLAGS) -o ddr DDR.hs HsCharm.hs charm/charm.c charm/charm.h -package random-extras
 
-rl: rl.hs hscharm.hs charm/charm.c charm/charm.h
-	ghc -O2 -Wall -fwarn-tabs --make -fforce-recomp -o rl rl.hs hscharm.hs charm/charm.c charm/charm.h -package random-extras -package base
+rl: RL.hs HsCharm.hs charm/charm.c charm/charm.h
+	ghc $(FLAGS) -o rl RL.hs HsCharm.hs charm/charm.c charm/charm.h -package random-extras -package base
 
-lint:
+hlint:
 	hlint .
+
+lint: hlint
 
 churn:
 	bundle exec churn
 
 clean:
-	-rm *.exe
-	-rm *.o
-	-rm *.hi
 	-rm rl
 	-rm ddr
 	-rm hellocharm
-
+	-rm *.exe
+	-rm *.o
+	-rm *.hi
