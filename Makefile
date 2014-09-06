@@ -20,7 +20,10 @@ bin/rl: RL.hs HsCharm.hs charm/charm.c charm/charm.h
 hlint:
 	hlint .
 
-lint: hlint
+lili:
+	bundle exec lili .
+
+lint: hlint lili
 
 churn:
 	bundle exec churn
