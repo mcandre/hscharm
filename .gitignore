@@ -3,3 +3,4 @@ bin/
 *.hi
 Gemfile.lock
 tmp/
+node_modules/
