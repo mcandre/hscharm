@@ -5,17 +5,17 @@ all: test
 test: bin/hellocharm
 	bin/hellocharm
 
-bin/hellocharm: HelloCharm.hs HsCharm.hs charm/charm.c charm/charm.h
-	mkdir -p bin/
-	ghc $(FLAGS) -o bin/hellocharm HelloCharm.hs HsCharm.hs charm/charm.c charm/charm.h
+bin/hellocharm: HelloCharm.hs HsCharm.hs charm/lib/charm.c charm/lib/charm.h
+	mkdir -p bin
+	ghc $(FLAGS) -o bin/hellocharm HelloCharm.hs HsCharm.hs charm/lib/charm.c charm/lib/charm.h
 
-bin/ddr: DDR.hs HsCharm.hs charm/charm.c charm/charm.h
-	mkdir -p bin/
-	ghc $(FLAGS) -o bin/ddr DDR.hs HsCharm.hs charm/charm.c charm/charm.h -package random-extras
+bin/ddr: DDR.hs HsCharm.hs charm/lib/charm.c charm/lib/charm.h
+	mkdir -p bin
+	ghc $(FLAGS) -o bin/ddr DDR.hs HsCharm.hs charm/lib/charm.c charm/lib/charm.h -package random-extras
 
-bin/rl: RL.hs HsCharm.hs charm/charm.c charm/charm.h
-	mkdir -p bin/
-	ghc $(FLAGS) -o bin/rl RL.hs HsCharm.hs charm/charm.c charm/charm.h -package random-extras -package base
+bin/rl: RL.hs HsCharm.hs charm/lib/charm.c charm/lib/charm.h
+	mkdir -p bin
+	ghc $(FLAGS) -o bin/rl RL.hs HsCharm.hs charm/lib/charm.c charm/lib/charm.h -package random-extras -package base
 
 hlint:
 	hlint .

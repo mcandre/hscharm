@@ -7,6 +7,7 @@
 
 # EXAMPLE
 
-    $ git submodule init
-    $ git submodule update
-	$ make
+```
+$ git submodule update --init --recursive
+$ make
+```
