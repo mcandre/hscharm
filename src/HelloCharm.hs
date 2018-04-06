@@ -1,3 +1,5 @@
+module Main where
+
 import HsCharm
 
 react :: Key -> IO ()

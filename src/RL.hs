@@ -1,9 +1,11 @@
 -- Roguelike
+module Main where
+
+import qualified System.Random as Random
+import qualified System.Random.Shuffle as Shuffle
 
 import HsCharm
-import Data.Random
-import Data.Random.Source.DevRandom
-import Data.Random.Extras
+
 import Control.Monad (when, replicateM)
 import Data.List (find, delete, intercalate)
 
@@ -186,7 +188,10 @@ loop g = do
         loop g')
 
 generateRow :: Int -> IO [Monster]
-generateRow w = (replicateM w . flip runRVar DevRandom . choice) [defaultFloor, defaultFloor, defaultWall]
+generateRow w = do
+  stdGen <- Random.getStdGen
+  let monster = head $ Shuffle.shuffle' [defaultFloor, defaultFloor, defaultWall] 3 stdGen
+  return $ replicate w monster
 
 generateLevel :: Int -> Int -> IO [[Monster]]
 generateLevel w h = replicateM h (generateRow w)
@@ -199,8 +204,8 @@ generateMonsters g [] = return g
 generateMonsters g (m:ms) = do
   let r = (loc . rogue) g
 
-  x <- runRVar (choice [0 .. width g - 1]) DevRandom
-  y <- runRVar (choice [0 .. height g - 1]) DevRandom
+  x <- Random.getStdRandom $ Random.randomR (0, width g - 1)
+  y <- Random.getStdRandom $ Random.randomR (0, height g - 1)
 
   if r == (x, y)
     then generateMonsters g (m:ms)
@@ -230,8 +235,8 @@ main = do
   -- Reserve space for messages
   let h' = h - messageSpace
 
-  locX <- runRVar (choice [0 .. w - 1]) DevRandom
-  locY <- runRVar (choice [0 .. h' - 1]) DevRandom
+  locX <- Random.getStdRandom $ Random.randomR (0, w - 1)
+  locY <- Random.getStdRandom $ Random.randomR (0, h' - 1)
 
   lev <- generateLevel w h'
   let g = defaultGame {

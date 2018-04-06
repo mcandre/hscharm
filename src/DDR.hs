@@ -1,7 +1,10 @@
+module Main where
+
+import qualified System.Random as Random
+import qualified System.Random.Shuffle as Shuffle
+
 import HsCharm
-import Data.Random
-import Data.Random.Source.DevRandom
-import Data.Random.Extras
+
 import Control.Monad (when)
 import Text.Printf (printf)
 
@@ -36,7 +39,9 @@ loop :: Game -> IO ()
 loop g = do
   drawScore $ score g
 
-  arrow <- runRVar (choice [KeyUp, KeyDown, KeyRight, KeyLeft]) DevRandom
+  stdGen <- Random.getStdGen
+
+  let arrow = head $ Shuffle.shuffle' [KeyUp, KeyDown, KeyRight, KeyLeft] 4 stdGen
 
   drawArrow arrow
 
