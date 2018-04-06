@@ -41,12 +41,6 @@ $ shake
 $ shake lint
 ```
 
-# TEST
-
-```console
-$ shake test
-```
-
 # PUBLISH
 
 ```console
