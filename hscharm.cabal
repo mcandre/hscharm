@@ -1,8 +1,8 @@
 name:           hscharm
-version:        0.0.1
-category:       Math
-synopsis:       Wau codec
-description:    A base unary encoder/decoder
+version:        0.0.2
+category:       GUI
+synopsis:       minimal ncurses-like library
+description:    A basic ncurses-like library
 license:        BSD3
 license-file:   LICENSE.md
 author:         Andrew Pennebaker

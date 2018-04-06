@@ -14,6 +14,10 @@ q
 $
 ```
 
+# DOCUMENTATION
+
+https://hackage.haskell.org/package/hscharm
+
 # RUNTIME REQUIREMENTS
 
 (None)
