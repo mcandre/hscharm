@@ -2,7 +2,7 @@ name:           hscharm
 version:        0.0.2
 category:       GUI
 synopsis:       minimal ncurses-like library
-description:    A basic ncurses-like library
+description:    A basic ncurses-like library for simple terminal graphics
 license:        BSD3
 license-file:   LICENSE.md
 author:         Andrew Pennebaker
