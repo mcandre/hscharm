@@ -2,151 +2,151 @@
 
 -- | HsCharm wraps charm, a minimal ncurses-like terminal UI library
 module HsCharm (
-  charmVersion,
+    charmVersion,
 
-  getWidth,
-  getHeight,
+    getWidth,
+    getHeight,
 
-  cursorOff,
-  cursorOn,
+    cursorOff,
+    cursorOn,
 
-  echoOff,
-  echoOn,
+    echoOff,
+    echoOn,
 
-  rawOn,
-  rawOff,
+    rawOn,
+    rawOff,
 
-  getCursor,
-  moveCursor,
-  blotChar,
-  blotString,
-  hCenterString,
-  vCenterString,
+    getCursor,
+    moveCursor,
+    blotChar,
+    blotString,
+    hCenterString,
+    vCenterString,
 
-  clearScreen,
+    clearScreen,
 
-  handleSignal,
+    handleSignal,
 
-  startCharm,
-  endCharm,
+    startCharm,
+    endCharm,
 
-  getKey,
-  Key(
-    KeyBackspace,
-    KeyTab,
-    KeyNewline,
+    getKey,
+    Key(
+        KeyBackspace,
+        KeyTab,
+        KeyNewline,
 
-    KeySpace,
-    KeyExclamation,
-    KeyDoubleQuote,
-    KeyHash,
-    KeyDollar,
-    KeyPercent,
-    KeyAmpersand,
-    KeySingleQuote,
-    KeyLeftParen,
-    KeyRightParen,
-    KeyAsterisk,
-    KeyPlus,
-    KeyComma,
-    KeyMinus,
-    KeyPeriod,
-    KeySlash,
+        KeySpace,
+        KeyExclamation,
+        KeyDoubleQuote,
+        KeyHash,
+        KeyDollar,
+        KeyPercent,
+        KeyAmpersand,
+        KeySingleQuote,
+        KeyLeftParen,
+        KeyRightParen,
+        KeyAsterisk,
+        KeyPlus,
+        KeyComma,
+        KeyMinus,
+        KeyPeriod,
+        KeySlash,
 
-    KeyZero,
-    KeyOne,
-    KeyTwo,
-    KeyThree,
-    KeyFour,
-    KeyFive,
-    KeySix,
-    KeySeven,
-    KeyEight,
-    KeyNine,
+        KeyZero,
+        KeyOne,
+        KeyTwo,
+        KeyThree,
+        KeyFour,
+        KeyFive,
+        KeySix,
+        KeySeven,
+        KeyEight,
+        KeyNine,
 
-    KeyColon,
-    KeySemicolon,
-    KeyLessThan,
-    KeyEquals,
-    KeyGreaterThan,
-    KeyQuestion,
-    KeyAt,
+        KeyColon,
+        KeySemicolon,
+        KeyLessThan,
+        KeyEquals,
+        KeyGreaterThan,
+        KeyQuestion,
+        KeyAt,
 
-    KeyCapitalA,
-    KeyCapitalB,
-    KeyCapitalC,
-    KeyCapitalD,
-    KeyCapitalE,
-    KeyCapitalF,
-    KeyCapitalG,
-    KeyCapitalH,
-    KeyCapitalI,
-    KeyCapitalJ,
-    KeyCapitalK,
-    KeyCapitalL,
-    KeyCapitalM,
-    KeyCapitalN,
-    KeyCapitalO,
-    KeyCapitalP,
-    KeyCapitalQ,
-    KeyCapitalR,
-    KeyCapitalS,
-    KeyCapitalT,
-    KeyCapitalU,
-    KeyCapitalV,
-    KeyCapitalW,
-    KeyCapitalX,
-    KeyCapitalY,
-    KeyCapitalZ,
+        KeyCapitalA,
+        KeyCapitalB,
+        KeyCapitalC,
+        KeyCapitalD,
+        KeyCapitalE,
+        KeyCapitalF,
+        KeyCapitalG,
+        KeyCapitalH,
+        KeyCapitalI,
+        KeyCapitalJ,
+        KeyCapitalK,
+        KeyCapitalL,
+        KeyCapitalM,
+        KeyCapitalN,
+        KeyCapitalO,
+        KeyCapitalP,
+        KeyCapitalQ,
+        KeyCapitalR,
+        KeyCapitalS,
+        KeyCapitalT,
+        KeyCapitalU,
+        KeyCapitalV,
+        KeyCapitalW,
+        KeyCapitalX,
+        KeyCapitalY,
+        KeyCapitalZ,
 
-    KeyLeftBracket,
-    KeyBackslash,
-    KeyRightBracket,
-    KeyCaret,
-    KeyUnderscore,
-    KeyBacktick,
+        KeyLeftBracket,
+        KeyBackslash,
+        KeyRightBracket,
+        KeyCaret,
+        KeyUnderscore,
+        KeyBacktick,
 
-    KeyA,
-    KeyB,
-    KeyC,
-    KeyD,
-    KeyE,
-    KeyF,
-    KeyG,
-    KeyH,
-    KeyI,
-    KeyJ,
-    KeyK,
-    KeyL,
-    KeyM,
-    KeyN,
-    KeyO,
-    KeyP,
-    KeyQ,
-    KeyR,
-    KeyS,
-    KeyT,
-    KeyU,
-    KeyV,
-    KeyW,
-    KeyX,
-    KeyY,
-    KeyZ,
+        KeyA,
+        KeyB,
+        KeyC,
+        KeyD,
+        KeyE,
+        KeyF,
+        KeyG,
+        KeyH,
+        KeyI,
+        KeyJ,
+        KeyK,
+        KeyL,
+        KeyM,
+        KeyN,
+        KeyO,
+        KeyP,
+        KeyQ,
+        KeyR,
+        KeyS,
+        KeyT,
+        KeyU,
+        KeyV,
+        KeyW,
+        KeyX,
+        KeyY,
+        KeyZ,
 
-    KeyLeftBrace,
-    KeyPipe,
-    KeyRightBrace,
-    KeyTilde,
+        KeyLeftBrace,
+        KeyPipe,
+        KeyRightBrace,
+        KeyTilde,
 
-    KeyUp,
-    KeyDown,
-    KeyRight,
-    KeyLeft,
+        KeyUp,
+        KeyDown,
+        KeyRight,
+        KeyLeft,
 
-    KeyEscape,
-    KeyUnknown
-    )
-  ) where
+        KeyEscape,
+        KeyUnknown
+        )
+    ) where
 
 import Foreign.C
 
@@ -187,10 +187,10 @@ foreign import ccall "charm.h get_y" getY :: IO Int
 -- | getCursor queries the cursor position.
 getCursor :: IO (Int, Int)
 getCursor = do
-  x <- getX
-  y <- getY
+    x <- getX
+    y <- getY
 
-  return (x, y)
+    return (x, y)
 
 -- | moveCursor repositions the cursor.
 foreign import ccall "charm.h move_cursor" moveCursor :: Int -> Int -> IO ()
@@ -204,8 +204,8 @@ foreign import ccall "charm.h blot_string" blotString' :: CString -> IO ()
 -- | blotString renders a string message.
 blotString :: String -> IO ()
 blotString s = do
-  s' <- newCString s
-  blotString' s'
+    s' <- newCString s
+    blotString' s'
 
 -- | hCenterString' centers C strings horizontally.
 foreign import ccall "charm.h hcenter_string" hCenterString' :: CString -> IO ()
@@ -213,8 +213,8 @@ foreign import ccall "charm.h hcenter_string" hCenterString' :: CString -> IO ()
 -- | hCenterString displays a string centered horizontally on screen.
 hCenterString :: String -> IO ()
 hCenterString s = do
-  s' <- newCString s
-  hCenterString' s'
+    s' <- newCString s
+    hCenterString' s'
 
 -- | vCenterString' centers C strings vertically.
 foreign import ccall "charm.h vcenter_string" vCenterString' :: CString -> IO ()
@@ -222,8 +222,8 @@ foreign import ccall "charm.h vcenter_string" vCenterString' :: CString -> IO ()
 -- | vCenterString displays a string centered vertically on screen.
 vCenterString :: String -> IO ()
 vCenterString s = do
-  s' <- newCString s
-  vCenterString' s'
+    s' <- newCString s
+    vCenterString' s'
 
 -- | clearScreen wipes the terminal display.
 foreign import ccall "charm.h clear_screen" clearScreen :: IO ()
@@ -242,123 +242,123 @@ foreign import ccall "charm.h get_key" getKey' :: IO Int
 
 -- | Key models keybard input.
 data Key
-  = KeyBackspace
-  | KeyTab
-  | KeyNewline
+    = KeyBackspace
+    | KeyTab
+    | KeyNewline
 
-  | KeySpace
-  | KeyExclamation
-  | KeyDoubleQuote
-  | KeyHash
-  | KeyDollar
-  | KeyPercent
-  | KeyAmpersand
-  | KeySingleQuote
-  | KeyLeftParen
-  | KeyRightParen
-  | KeyAsterisk
-  | KeyPlus
-  | KeyComma
-  | KeyMinus
-  | KeyPeriod
-  | KeySlash
+    | KeySpace
+    | KeyExclamation
+    | KeyDoubleQuote
+    | KeyHash
+    | KeyDollar
+    | KeyPercent
+    | KeyAmpersand
+    | KeySingleQuote
+    | KeyLeftParen
+    | KeyRightParen
+    | KeyAsterisk
+    | KeyPlus
+    | KeyComma
+    | KeyMinus
+    | KeyPeriod
+    | KeySlash
 
-  | KeyZero
-  | KeyOne
-  | KeyTwo
-  | KeyThree
-  | KeyFour
-  | KeyFive
-  | KeySix
-  | KeySeven
-  | KeyEight
-  | KeyNine
+    | KeyZero
+    | KeyOne
+    | KeyTwo
+    | KeyThree
+    | KeyFour
+    | KeyFive
+    | KeySix
+    | KeySeven
+    | KeyEight
+    | KeyNine
 
-  | KeyColon
-  | KeySemicolon
-  | KeyLessThan
-  | KeyEquals
-  | KeyGreaterThan
-  | KeyQuestion
-  | KeyAt
+    | KeyColon
+    | KeySemicolon
+    | KeyLessThan
+    | KeyEquals
+    | KeyGreaterThan
+    | KeyQuestion
+    | KeyAt
 
-  | KeyCapitalA
-  | KeyCapitalB
-  | KeyCapitalC
-  | KeyCapitalD
-  | KeyCapitalE
-  | KeyCapitalF
-  | KeyCapitalG
-  | KeyCapitalH
-  | KeyCapitalI
-  | KeyCapitalJ
-  | KeyCapitalK
-  | KeyCapitalL
-  | KeyCapitalM
-  | KeyCapitalN
-  | KeyCapitalO
-  | KeyCapitalP
-  | KeyCapitalQ
-  | KeyCapitalR
-  | KeyCapitalS
-  | KeyCapitalT
-  | KeyCapitalU
-  | KeyCapitalV
-  | KeyCapitalW
-  | KeyCapitalX
-  | KeyCapitalY
-  | KeyCapitalZ
+    | KeyCapitalA
+    | KeyCapitalB
+    | KeyCapitalC
+    | KeyCapitalD
+    | KeyCapitalE
+    | KeyCapitalF
+    | KeyCapitalG
+    | KeyCapitalH
+    | KeyCapitalI
+    | KeyCapitalJ
+    | KeyCapitalK
+    | KeyCapitalL
+    | KeyCapitalM
+    | KeyCapitalN
+    | KeyCapitalO
+    | KeyCapitalP
+    | KeyCapitalQ
+    | KeyCapitalR
+    | KeyCapitalS
+    | KeyCapitalT
+    | KeyCapitalU
+    | KeyCapitalV
+    | KeyCapitalW
+    | KeyCapitalX
+    | KeyCapitalY
+    | KeyCapitalZ
 
-  | KeyLeftBracket
-  | KeyBackslash
-  | KeyRightBracket
-  | KeyCaret
-  | KeyUnderscore
-  | KeyBacktick
+    | KeyLeftBracket
+    | KeyBackslash
+    | KeyRightBracket
+    | KeyCaret
+    | KeyUnderscore
+    | KeyBacktick
 
-  | KeyA
-  | KeyB
-  | KeyC
-  | KeyD
-  | KeyE
-  | KeyF
-  | KeyG
-  | KeyH
-  | KeyI
-  | KeyJ
-  | KeyK
-  | KeyL
-  | KeyM
-  | KeyN
-  | KeyO
-  | KeyP
-  | KeyQ
-  | KeyR
-  | KeyS
-  | KeyT
-  | KeyU
-  | KeyV
-  | KeyW
-  | KeyX
-  | KeyY
-  | KeyZ
+    | KeyA
+    | KeyB
+    | KeyC
+    | KeyD
+    | KeyE
+    | KeyF
+    | KeyG
+    | KeyH
+    | KeyI
+    | KeyJ
+    | KeyK
+    | KeyL
+    | KeyM
+    | KeyN
+    | KeyO
+    | KeyP
+    | KeyQ
+    | KeyR
+    | KeyS
+    | KeyT
+    | KeyU
+    | KeyV
+    | KeyW
+    | KeyX
+    | KeyY
+    | KeyZ
 
-  | KeyLeftBrace
-  | KeyPipe
-  | KeyRightBrace
-  | KeyTilde
-  | KeyUp
-  | KeyDown
-  | KeyRight
-  | KeyLeft
+    | KeyLeftBrace
+    | KeyPipe
+    | KeyRightBrace
+    | KeyTilde
+    | KeyUp
+    | KeyDown
+    | KeyRight
+    | KeyLeft
 
-  | KeyEscape
-  | KeyUnknown
+    | KeyEscape
+    | KeyUnknown
 
-  deriving (Eq, Ord, Enum, Show)
+    deriving (Eq, Ord, Enum, Show)
 
 -- | getKey queries key presses.
 getKey :: IO Key
 getKey = do
-  k <- getKey'
-  return (toEnum k :: Key)
+    k <- getKey'
+    return (toEnum k :: Key)
